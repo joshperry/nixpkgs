@@ -938,6 +938,19 @@ let
                     ];
                   }
                 )
+                # Disallows fprintd auth for sudo/su when the requestor does not own a tty
+                # on which to show a request to the user.
+                # https://nvd.nist.gov/vuln/detail/cve-2024-37408
+                {
+                  name = "fprintd_sudo_only_tty";
+                  enable = cfg.fprintAuth;
+                  control = "[success=1 default=ignore]";
+                  modulePath = "${package}/lib/security/pam_succeed_if.so";
+                  args = [
+                    "service in sudo:su:su-l"
+                    "tty in :unknown"
+                  ];
+                }
                 {
                   name = "fprintd";
                   enable = cfg.fprintAuth;
